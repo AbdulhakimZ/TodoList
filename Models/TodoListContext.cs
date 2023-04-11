@@ -1,7 +1,7 @@
 ﻿using TodoList.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ContosoUniversity.Data
+namespace TodoList.Data
 {
     public class TodoListContext : DbContext
     {
