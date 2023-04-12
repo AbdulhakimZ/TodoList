@@ -9,7 +9,7 @@ namespace TodoList.Data
         {
         }
 
-        public DbSet<TodoItem> todoItems { get; set; }
+        public DbSet<TodoItem> TodoItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

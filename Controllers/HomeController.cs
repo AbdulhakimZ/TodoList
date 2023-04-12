@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using TodoList.Data;
 using TodoList.Models;
 
 namespace TodoList.Controllers
@@ -7,15 +8,18 @@ namespace TodoList.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly TodoListContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(TodoListContext context,ILogger<HomeController> logger)
         {
+            _context = context;
             _logger = logger;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var items = _context.TodoItems.ToList();
+            return View(items);
         }
 
         public IActionResult Privacy()

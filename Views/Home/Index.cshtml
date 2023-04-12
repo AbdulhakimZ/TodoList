@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<TodoList.Models.TodoItem>
+@{
     ViewData["Title"] = "Home Page";
 } 
 
@@ -12,6 +13,12 @@
                         <div class="add-items d-flex"> <input type="text" class="form-control todo-list-input" placeholder="What do you need to do today?"> <button class="add btn btn-primary font-weight-bold todo-list-add-btn">Add</button> </div>
                         <div class="list-wrapper">
                             <ul class="d-flex flex-column-reverse todo-list">
+                                @foreach (var todo in Model)
+                                {
+                                    <li>
+                                        <div class="form-check"> <label class="form-check-label"> <input class="checkbox" type="checkbox"> @todo.Description <i class="input-helper"></i></label> </div> <i class="remove mdi mdi-close-circle-outline"></i>
+                                    </li>
+                                }
                                 <li>
                                     <div class="form-check"> <label class="form-check-label"> <input class="checkbox" type="checkbox"> For what reason would it be advisable. <i class="input-helper"></i></label> </div> <i class="remove mdi mdi-close-circle-outline"></i>
                                 </li>
@@ -26,3 +33,4 @@
         </div>
     </div>
 </div>
+
