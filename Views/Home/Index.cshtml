@@ -10,21 +10,23 @@
                 <div class="card px-3">
                     <div class="card-body">
                         <h4 class="card-title">Awesome Todo list</h4>
-                        <div class="add-items d-flex"> <input type="text" class="form-control todo-list-input" placeholder="What do you need to do today?"> <button class="add btn btn-primary font-weight-bold todo-list-add-btn">Add</button> </div>
+                        <div class="add-items d-flex"> 
+                            <input type="text" class="form-control todo-list-input" placeholder="What do you need to do today?" id="add-input"> 
+                            <button class="add btn btn-primary font-weight-bold todo-list-add-btn" id="add-btn">Add</button>
+                        </div>
                         <div class="list-wrapper">
-                            <ul class="d-flex flex-column-reverse todo-list">
+                            <ul class="d-flex flex-column-reverse todo-list" id="todo-list">
                                 @foreach (var todo in Model)
                                 {
-                                    <li>
-                                        <div class="form-check"> <label class="form-check-label"> <input class="checkbox" type="checkbox"> @todo.Description <i class="input-helper"></i></label> </div> <i class="remove mdi mdi-close-circle-outline"></i>
+                                    <li data-id="@todo.Id" @if (todo.IsComplete) { <text>class="completed"</text> }>
+                                        <div class="form-check"> 
+                                            <label class="form-check-label">
+                                                <input class="checkbox" type="checkbox" data-id="@todo.Id" @(todo.IsComplete ? "checked" : "")> @todo.Description <i class="input-helper"></i>
+                                            </label> 
+                                        </div>
+                                        <i class="remove mdi mdi-close-circle-outline" data-id="@todo.Id"></i>
                                     </li>
                                 }
-                                <li>
-                                    <div class="form-check"> <label class="form-check-label"> <input class="checkbox" type="checkbox"> For what reason would it be advisable. <i class="input-helper"></i></label> </div> <i class="remove mdi mdi-close-circle-outline"></i>
-                                </li>
-                                <li class="completed">
-                                    <div class="form-check"> <label class="form-check-label"> <input class="checkbox" type="checkbox" checked=""> For what reason would it be advisable for me to think. <i class="input-helper"></i></label> </div> <i class="remove mdi mdi-close-circle-outline"></i>
-                                </li>
                             </ul>
                         </div>
                     </div>
@@ -34,3 +36,70 @@
     </div>
 </div>
 
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function () {
+            // Handle edit button click
+            $(document).on('change', '.checkbox', function () {
+                //var id = $(this).parent().parent().find('.remove').data('id');
+                var id = $(this).closest('li').data('id');
+                var completed = $(this).is(':checked');
+                if (completed) {
+                    $(this).closest('li').addClass('completed');
+                } else {
+                    $(this).closest('li').removeClass('completed');
+                }
+                $.ajax({
+                    url: '/Home/Update',
+                    type: 'POST',
+                    data: { id: id, IsComplete: completed },
+                    success: function (data) {
+                    },
+                    error: function () {
+                        alert("Error occurred while loading edit form");
+                    }
+                });
+            });
+
+            // Handle delete button click
+            $(document).on('click', '.remove', function () {
+                if (confirm("Are you sure you want to delete this todo?")) {
+                    var id = $(this).data('id');
+                    var li = $(this).parent();
+                    $.ajax({
+                        url: '/Home/Delete',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (data) {
+                            li.remove();
+                        },
+                        error: function () {
+                            alert("Error occurred while deleting todo");
+                        }
+                    });
+                }
+            });
+
+            // Handle add button click
+            $('#add-btn').click(function () {
+                var description = $('#add-input').val();
+                console.log(description);
+                if (description.trim() != '') {
+                    $.ajax({
+                        url: '/Home/Create',
+                        type: 'POST',
+                        data: { description: description },
+                        success: function (data) {
+                            $('#add-input').val('');
+                            $('#todo-list').prepend('<li data-id="' + data.id + '"><div class="form-check"><label class="form-check-label"><input class="checkbox" type="checkbox">' + description + '<i class="input-helper"></i></label></div><i class="remove mdi mdi-close-circle-outline" data-id="' + data.id + '"></i></li>');
+                        },
+                        error: function () {
+                            alert("Error occurred while loading create form");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
